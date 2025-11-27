@@ -28,7 +28,7 @@ KlassenCoach is een digibord-webapp voor het basisonderwijs met een groot stopli
 - Bootstrap 5 + eigen CSS
 - Socket.IO
 - MariaDB (mysql2/promise)
-- express-session (sessietimeout 30 min)
+- express-session (sessietimeout 30 min) met MariaDB-backed session store
 
 ## Belangrijkste features
 - Groot stoplicht (groen/oranje/rood) met realtime updates.

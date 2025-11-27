@@ -4,7 +4,8 @@ const express = require('express');
 const session = require('express-session');
 const http = require('http');
 const { Server } = require('socket.io');
-const { pool, query } = require('./config/db');
+const MySQLStore = require('express-mysql-session')(session);
+const { pool, query, sessionOptions } = require('./config/db');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,6 +14,14 @@ const io = new Server(server);
 const PORT = process.env.PORT || 4001;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Juf!2025';
 const SESSION_MAX_AGE = 30 * 60 * 1000; // 30 minutes
+
+const sessionStore = new MySQLStore({
+  ...sessionOptions,
+  clearExpired: true,
+  checkExpirationInterval: 15 * 60 * 1000,
+  expiration: SESSION_MAX_AGE,
+  createDatabaseTable: true
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +34,7 @@ app.use(
     secret: process.env.SESSION_SECRET || 'change_me',
     resave: false,
     saveUninitialized: false,
+    store: sessionStore,
     cookie: { maxAge: SESSION_MAX_AGE }
   })
 );
