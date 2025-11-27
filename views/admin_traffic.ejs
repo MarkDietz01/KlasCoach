@@ -1,0 +1,73 @@
+<%- include('partials/header') %>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/admin/students">KlassenCoach Admin</a>
+    <div class="d-flex align-items-center gap-2">
+      <form class="d-flex" method="POST" action="/class/select">
+        <select name="class_id" class="form-select me-2">
+          <% classes.forEach(cls => { %>
+            <option value="<%= cls.id %>" <%= cls.id === selectedClassId ? 'selected' : '' %>><%= cls.name %></option>
+          <% }) %>
+        </select>
+        <button class="btn btn-outline-primary" type="submit">Wissel</button>
+      </form>
+      <a class="btn btn-outline-secondary me-2" href="/admin/students">Leerlingen</a>
+      <a class="btn btn-outline-secondary me-2" href="/admin/points">Punten</a>
+      <a class="btn btn-primary me-2" href="/admin/traffic">Stoplicht</a>
+      <a class="btn btn-outline-secondary me-2" href="/admin/reports">Rapportages</a>
+      <a class="btn btn-danger" href="/admin/logout">Uitloggen</a>
+    </div>
+  </div>
+</nav>
+<div class="container admin-container">
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="admin-card">
+        <h4 class="mb-3">Status kiezen</h4>
+        <form method="POST" action="/admin/traffic" class="d-grid gap-3">
+          <button class="btn btn-success btn-lg" name="state" value="green" type="submit">Groen – normaal werken</button>
+          <button class="btn btn-warning btn-lg" name="state" value="orange" type="submit">Oranje – rustig afronden</button>
+          <button class="btn btn-danger btn-lg" name="state" value="red" type="submit">Rood – stilte</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="admin-card text-center">
+        <h4 class="mb-3">Huidige status</h4>
+        <div class="d-flex justify-content-center">
+          <div class="traffic-status-circle" style="background:<%= traffic.state === 'green' ? '#4caf50' : traffic.state === 'orange' ? '#ffa000' : '#f44336' %>;">
+            <%= traffic.state.toUpperCase() %>
+          </div>
+        </div>
+        <p class="mt-3 text-muted">Laatst bijgewerkt: <%= new Date(traffic.updated_at).toLocaleString('nl-NL') %></p>
+      </div>
+      <div class="admin-card mt-3">
+        <h4 class="mb-3">Timer</h4>
+        <p class="text-muted">Laat een aftelklok verschijnen op het digibord.</p>
+        <form class="row g-2 mb-3" method="POST" action="/admin/timer">
+          <div class="col-md-4">
+            <label class="form-label">Minuten</label>
+            <input type="number" class="form-control" name="minutes" min="1" placeholder="10">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Label (optioneel)</label>
+            <input type="text" class="form-control" name="label" placeholder="Rekentijd">
+          </div>
+          <div class="col-md-2 d-grid align-items-end">
+            <button class="btn btn-primary" type="submit">Start</button>
+          </div>
+        </form>
+        <form method="POST" action="/admin/timer">
+          <input type="hidden" name="minutes" value="0">
+          <button class="btn btn-outline-secondary">Stop/clear timer</button>
+        </form>
+        <div class="mt-3 p-3 bg-light rounded">
+          <p class="mb-1 fw-bold">Huidig:</p>
+          <p class="mb-1">Label: <%= timer.label || 'Geen' %></p>
+          <p class="mb-0">Einde: <%= timer.ends_at ? new Date(timer.ends_at).toLocaleTimeString('nl-NL') : '-' %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>
