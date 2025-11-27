@@ -18,6 +18,13 @@ KlassenCoach is een digibord-webapp voor het basisonderwijs met een groot stopli
    - Digibord: `http://<HOST>:4001/board`
    - Admin: `http://<HOST>:4001/admin/login`
 
+### Foutmelding "Table 'klassencoach.classes' doesn't exist" oplossen
+De app probeert het schema bij het opstarten automatisch te initialiseren. Mocht je alsnog de foutmelding zien, voer het init-script handmatig opnieuw uit op de database-container om alle tabellen (waaronder `classes`) opnieuw aan te maken:
+
+```bash
+docker compose exec db sh -c "mysql -u root -prootpassword < /docker-entrypoint-initdb.d/init.sql"
+```
+
 ## Poorten
 - Node/Express: `4001`
 - MariaDB: containerpoort `3306`, gemapt naar host `4307` in `docker-compose.yml`.

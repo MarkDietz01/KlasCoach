@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
@@ -21,4 +23,43 @@ async function query(sql, params = []) {
   return rows;
 }
 
-module.exports = { pool, query, sessionOptions };
+async function runInitScript() {
+  const sqlPath = path.join(__dirname, '..', 'db', 'init.sql');
+  const contents = fs.readFileSync(sqlPath, 'utf8');
+  const statements = contents
+    .split(/;\s*(?:\r?\n|$)/)
+    .map((stmt) => stmt.trim())
+    .filter(Boolean);
+
+  // Use a bootstrap connection without database on failures
+  const baseConfig = { ...sessionOptions };
+  delete baseConfig.database;
+
+  const connection = await mysql.createConnection({ ...baseConfig, multipleStatements: true });
+  try {
+    for (const stmt of statements) {
+      await connection.query(stmt);
+    }
+  } finally {
+    await connection.end();
+  }
+}
+
+async function ensureSchema() {
+  try {
+    await query('SELECT 1 FROM classes LIMIT 1');
+  } catch (err) {
+    if (
+      err.code === 'ER_NO_SUCH_TABLE' ||
+      err.code === 'ER_BAD_DB_ERROR' ||
+      err.code === 'ER_NO_DB_ERROR'
+    ) {
+      await runInitScript();
+      await query('SELECT 1 FROM classes LIMIT 1');
+    } else {
+      throw err;
+    }
+  }
+}
+
+module.exports = { pool, query, sessionOptions, ensureSchema };

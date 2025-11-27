@@ -5,7 +5,7 @@ const session = require('express-session');
 const http = require('http');
 const { Server } = require('socket.io');
 const MySQLStore = require('express-mysql-session')(session);
-const { pool, query, sessionOptions } = require('./config/db');
+const { pool, query, sessionOptions, ensureSchema } = require('./config/db');
 
 const app = express();
 const server = http.createServer(app);
@@ -535,6 +535,16 @@ app.use((err, req, res, next) => {
   res.status(500).render('error', { message: 'Er ging iets mis. Probeer het later opnieuw.' });
 });
 
-server.listen(PORT, () => {
-  console.log(`KlassenCoach draait op poort ${PORT}`);
-});
+async function startServer() {
+  try {
+    await ensureSchema();
+    server.listen(PORT, () => {
+      console.log(`KlassenCoach draait op poort ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Kon schema niet initialiseren:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
