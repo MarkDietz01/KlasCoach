@@ -47,12 +47,14 @@ async function runInitScript() {
 
 async function ensureSchema() {
   try {
+    await runInitScript();
     await query('SELECT 1 FROM classes LIMIT 1');
   } catch (err) {
     if (
       err.code === 'ER_NO_SUCH_TABLE' ||
       err.code === 'ER_BAD_DB_ERROR' ||
-      err.code === 'ER_NO_DB_ERROR'
+      err.code === 'ER_NO_DB_ERROR' ||
+      err.code === 'ER_BAD_FIELD_ERROR'
     ) {
       await runInitScript();
       await query('SELECT 1 FROM classes LIMIT 1');

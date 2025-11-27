@@ -40,6 +40,17 @@ CREATE TABLE IF NOT EXISTS traffic_state (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Backward compatibility: migrate legacy traffic_state table that used `id` instead of `class_id`
+ALTER TABLE traffic_state ADD COLUMN IF NOT EXISTS class_id INT NULL;
+UPDATE traffic_state SET class_id = id WHERE class_id IS NULL AND id IS NOT NULL;
+ALTER TABLE traffic_state MODIFY class_id INT NOT NULL;
+ALTER TABLE traffic_state DROP PRIMARY KEY;
+ALTER TABLE traffic_state ADD PRIMARY KEY (class_id);
+ALTER TABLE traffic_state DROP COLUMN IF EXISTS id;
+ALTER TABLE traffic_state DROP FOREIGN KEY IF EXISTS fk_traffic_class;
+ALTER TABLE traffic_state ADD CONSTRAINT fk_traffic_class FOREIGN KEY (class_id) REFERENCES classes(id)
+  ON DELETE CASCADE;
+
 CREATE TABLE IF NOT EXISTS settings (
   `key` VARCHAR(100) PRIMARY KEY,
   `value` TEXT NULL
