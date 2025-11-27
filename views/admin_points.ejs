@@ -1,0 +1,109 @@
+<%- include('partials/header') %>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/admin/students">KlassenCoach Admin</a>
+    <div class="d-flex">
+      <a class="btn btn-outline-secondary me-2" href="/admin/students">Leerlingen</a>
+      <a class="btn btn-primary me-2" href="/admin/points">Punten</a>
+      <a class="btn btn-outline-secondary me-2" href="/admin/traffic">Stoplicht</a>
+      <a class="btn btn-outline-secondary me-2" href="/admin/reports">Rapportages</a>
+      <a class="btn btn-danger" href="/admin/logout">Uitloggen</a>
+    </div>
+  </div>
+</nav>
+<div class="container admin-container">
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="admin-card">
+        <h4 class="mb-3">Punten geven</h4>
+        <form method="POST" action="/admin/points">
+          <div class="mb-3">
+            <label class="form-label">Leerling</label>
+            <select class="form-select form-select-lg" name="student_id" required>
+              <% students.forEach(student => { %>
+                <option value="<%= student.id %>">[<%= student.group_name || 'groep' %>] <%= student.name %> (nu: <%= student.total_points %>⭐)</option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label">Delta</label>
+              <input type="number" id="deltaInput" name="delta" class="form-control form-control-lg" value="1" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Reden</label>
+              <select class="form-select form-select-lg" name="reason">
+                <option value="">-</option>
+                <% reasons.forEach(r => { %>
+                  <option value="<%= r %>"><%= r %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 d-flex flex-wrap gap-2">
+            <button class="btn btn-success btn-lg" type="button" data-delta-preset="1">+1</button>
+            <button class="btn btn-success btn-lg" type="button" data-delta-preset="2">+2</button>
+            <button class="btn btn-danger btn-lg" type="button" data-delta-preset="-1">-1</button>
+            <% presets.forEach(preset => { %>
+              <button class="btn btn-outline-primary btn-lg" type="button" data-delta-preset="<%= preset.delta %>"><%= preset.label %></button>
+            <% }) %>
+          </div>
+          <button class="btn btn-primary btn-lg w-100" type="submit">Opslaan</button>
+        </form>
+      </div>
+      <div class="admin-card">
+        <h5 class="mb-3">Presets beheren</h5>
+        <form class="row g-2" method="POST" action="/admin/points/presets/add">
+          <div class="col-md-6">
+            <input type="text" class="form-control" name="label" placeholder="Label" required>
+          </div>
+          <div class="col-md-4">
+            <input type="number" class="form-control" name="delta" placeholder="Waarde" required>
+          </div>
+          <div class="col-md-2 d-grid">
+            <button class="btn btn-outline-primary" type="submit">Toevoegen</button>
+          </div>
+        </form>
+        <ul class="list-group mt-3">
+          <% presets.forEach(preset => { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><strong><%= preset.label %></strong> (<%= preset.delta %>)</span>
+              <form method="POST" action="/admin/points/presets/delete/<%= preset.id %>" class="m-0">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Verwijder</button>
+              </form>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="admin-card">
+        <h4 class="mb-3">Laatste gebeurtenissen</h4>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Leerling</th>
+                <th>Delta</th>
+                <th>Reden</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentEvents.forEach(ev => { %>
+                <tr>
+                  <td><%= new Date(ev.created_at).toLocaleString('nl-NL') %></td>
+                  <td><%= ev.student_name || '' %></td>
+                  <td><strong><%= ev.delta > 0 ? '+' + ev.delta : ev.delta %></strong></td>
+                  <td><%= ev.reason || '' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/admin.js"></script>
+<%- include('partials/footer') %>
