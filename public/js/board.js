@@ -1,7 +1,44 @@
 (function () {
   const socket = io();
+  const boardContainer = document.querySelector('.board-container');
+  const selectedClassId = boardContainer ? Number(boardContainer.dataset.classId) : null;
   const trafficEl = document.querySelector('.traffic-light-inner');
   const trafficLabel = document.querySelector('#traffic-label');
+  const timerBox = document.querySelector('.timer-display');
+  const timerCountdown = document.querySelector('.timer-countdown');
+  const timerLabel = document.querySelector('.timer-label');
+  let timerInterval = null;
+
+  function stopTimerTick() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function updateCountdown(endsAt, label) {
+    if (!timerCountdown || !timerBox) return;
+    stopTimerTick();
+    timerLabel.textContent = label || 'Timer';
+    if (!endsAt) {
+      timerCountdown.textContent = '--:--';
+      return;
+    }
+    function tick() {
+      const diff = new Date(endsAt).getTime() - Date.now();
+      if (diff <= 0) {
+        timerCountdown.textContent = '00:00';
+        stopTimerTick();
+        return;
+      }
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+      timerCountdown.textContent = `${pad(mins)}:${pad(secs)}`;
+    }
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
 
   function setTrafficState(state) {
     if (!trafficEl) return;
@@ -47,16 +84,29 @@
     setTrafficState(trafficEl.dataset.state || 'green');
   }
 
+  if (timerBox) {
+    const initialEndsAt = timerBox.dataset.endsAt;
+    const initialLabel = timerBox.dataset.label;
+    updateCountdown(initialEndsAt || null, initialLabel || 'Timer');
+  }
+
   socket.on('trafficUpdate', (payload) => {
+    if (selectedClassId && payload.classId && payload.classId !== selectedClassId) return;
     setTrafficState(payload.state);
   });
 
   socket.on('pointsUpdate', (payload) => {
+    if (selectedClassId && payload.classId && payload.classId !== selectedClassId) return;
     const card = document.querySelector(`.student-card[data-student-id="${payload.studentId}"]`);
     if (card) {
       const pointsEl = card.querySelector('.student-points');
       if (pointsEl) pointsEl.textContent = payload.newTotal;
       showPointChange(card, payload.delta);
     }
+  });
+
+  socket.on('timerUpdate', (payload) => {
+    if (selectedClassId && payload.classId && payload.classId !== selectedClassId) return;
+    updateCountdown(payload.endsAt, payload.label || 'Timer');
   });
 })();

@@ -23,6 +23,15 @@ h1, h2, h3, h4, h5 {
   margin-bottom: 20px;
 }
 
+.timer-display {
+  background: #fff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  min-width: 220px;
+}
+
 .traffic-light {
   width: 260px;
   height: 260px;

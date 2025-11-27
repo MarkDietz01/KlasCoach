@@ -32,8 +32,9 @@ KlassenCoach is een digibord-webapp voor het basisonderwijs met een groot stopli
 
 ## Belangrijkste features
 - Groot stoplicht (groen/oranje/rood) met realtime updates.
+- Meerdere klassen met eigen stoplicht, punten, presets en timers; kies bovenin welke klas je wilt tonen.
 - Leerlingkaarten met puntenstand en avatars (URL of Avataaars via getAvataaars-config).
-- Admin-panel met login, leerlingenbeheer, puntentoekenning met presets, stoplichtregeling en rapportages.
+- Admin-panel met login, leerlingenbeheer (toevoegen, archiveren of verwijderen), puntentoekenning met presets, stoplichtregeling, timers en rapportages.
 - CSV-export voor puntgebeurtenissen per periode.
 
 ## Database init

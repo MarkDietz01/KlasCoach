@@ -1,7 +1,19 @@
 <%- include('partials/header') %>
-<div class="container-fluid board-container">
-  <div class="text-center mb-4">
-    <h1 class="display-4 fw-bold">KlassenCoach</h1>
+<div class="container-fluid board-container" data-class-id="<%= selectedClassId %>">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h1 class="display-4 fw-bold">KlassenCoach</h1>
+      <p class="text-muted mb-0">Klas: <%= (classes.find(c => c.id === selectedClassId) || {}).name || '' %></p>
+    </div>
+    <form class="d-flex align-items-center gap-2" method="POST" action="/class/select">
+      <label class="fw-semibold">Kies klas:</label>
+      <select name="class_id" class="form-select form-select-lg">
+        <% classes.forEach(cls => { %>
+          <option value="<%= cls.id %>" <%= cls.id === selectedClassId ? 'selected' : '' %>><%= cls.name %></option>
+        <% }) %>
+      </select>
+      <button class="btn btn-primary btn-lg" type="submit">Toon</button>
+    </form>
   </div>
   <div class="traffic-wrapper">
     <div class="traffic-light">
@@ -10,6 +22,10 @@
       </div>
     </div>
     <p class="lead text-muted">Realtime stoplicht voor de klas</p>
+    <div class="timer-display mt-3" data-ends-at="<%= timer.ends_at ? new Date(timer.ends_at).toISOString() : '' %>" data-label="<%= timer.label || '' %>">
+      <div class="timer-label h4 mb-1"><%= timer.label || 'Timer' %></div>
+      <div class="timer-countdown display-5 fw-bold">--:--</div>
+    </div>
   </div>
   <div class="student-grid">
     <% students.forEach(student => { %>
