@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<div class="container-fluid board-container">
+  <div class="text-center mb-4">
+    <h1 class="display-4 fw-bold">KlassenCoach</h1>
+  </div>
+  <div class="traffic-wrapper">
+    <div class="traffic-light">
+      <div class="traffic-light-inner" data-state="<%= traffic.state %>">
+        <span id="traffic-label"></span>
+      </div>
+    </div>
+    <p class="lead text-muted">Realtime stoplicht voor de klas</p>
+  </div>
+  <div class="student-grid">
+    <% students.forEach(student => { %>
+      <div class="student-card" data-student-id="<%= student.id %>">
+        <div class="student-avatar">
+          <% if (student.avatar_type === 'avataaars' && student.avatar_config) { %>
+            <img src="https://avataaars.io/?<%= student.avatar_config %>" alt="avatar" />
+          <% } else if (student.avatar_url) { %>
+            <img src="<%= student.avatar_url %>" alt="avatar" />
+          <% } else { %>
+            <%= student.name.charAt(0) %>
+          <% } %>
+        </div>
+        <div class="student-info">
+          <p class="student-name"><%= student.name %></p>
+          <p class="student-group"><%= student.group_name || '' %></p>
+        </div>
+        <div class="student-points"><%= student.total_points %></div>
+        <div class="point-change"></div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/board.js"></script>
+<%- include('partials/footer') %>

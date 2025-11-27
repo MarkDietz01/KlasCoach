@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/admin/students">KlassenCoach Admin</a>
+    <div class="d-flex">
+      <a class="btn btn-outline-secondary me-2" href="/admin/students">Leerlingen</a>
+      <a class="btn btn-outline-secondary me-2" href="/admin/points">Punten</a>
+      <a class="btn btn-primary me-2" href="/admin/traffic">Stoplicht</a>
+      <a class="btn btn-outline-secondary me-2" href="/admin/reports">Rapportages</a>
+      <a class="btn btn-danger" href="/admin/logout">Uitloggen</a>
+    </div>
+  </div>
+</nav>
+<div class="container admin-container">
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="admin-card">
+        <h4 class="mb-3">Status kiezen</h4>
+        <form method="POST" action="/admin/traffic" class="d-grid gap-3">
+          <button class="btn btn-success btn-lg" name="state" value="green" type="submit">Groen – normaal werken</button>
+          <button class="btn btn-warning btn-lg" name="state" value="orange" type="submit">Oranje – rustig afronden</button>
+          <button class="btn btn-danger btn-lg" name="state" value="red" type="submit">Rood – stilte</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="admin-card text-center">
+        <h4 class="mb-3">Huidige status</h4>
+        <div class="d-flex justify-content-center">
+          <div class="traffic-status-circle" style="background:<%= traffic.state === 'green' ? '#4caf50' : traffic.state === 'orange' ? '#ffa000' : '#f44336' %>;">
+            <%= traffic.state.toUpperCase() %>
+          </div>
+        </div>
+        <p class="mt-3 text-muted">Laatst bijgewerkt: <%= new Date(traffic.updated_at).toLocaleString('nl-NL') %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>
