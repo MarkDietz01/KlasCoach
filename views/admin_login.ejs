@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<div class="container admin-container" style="max-width:500px;">
+  <div class="admin-card">
+    <h2 class="mb-4">Admin login</h2>
+    <% if (error) { %>
+      <div class="alert alert-danger">Onjuist wachtwoord.</div>
+    <% } %>
+    <% if (timeout) { %>
+      <div class="alert alert-warning">Je bent automatisch uitgelogd na 30 minuten inactiviteit.</div>
+    <% } %>
+    <form method="POST" action="/admin/login">
+      <div class="mb-3">
+        <label class="form-label">Wachtwoord</label>
+        <input type="password" class="form-control form-control-lg" name="password" required>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-primary btn-lg" type="submit">Inloggen</button>
+        <a href="#" id="forgot-link">Wachtwoord vergeten?</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="/js/admin.js"></script>
+<%- include('partials/footer') %>
